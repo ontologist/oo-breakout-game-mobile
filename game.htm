@@ -27,6 +27,40 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   margin: 0 auto;
 }
 
+/* Start game button styles */
+#runButton {
+  font-size: 28px !important;
+  padding: 18px 40px !important;
+  background: #4CAF50 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3) !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+#runButton:hover {
+  background: #45a049 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
+}
+
+#runButton:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+
+#runButton:disabled {
+  background: #cccccc !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
 </style>
 
 <style>
@@ -105,9 +139,10 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     <button id="muteButton" class="mute-button" onclick="toggleMute()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">🔊</button>
   </div>
   
-  <!-- Add a button to start the game
-       ゲームを開始するボタンを追加する -->
-  <button id="runButton">Start game</button>
+  <!-- Add a button to start the game - centered below canvas -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button id="runButton" style="font-size: 24px; padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease;">Start Game</button>
+  </div>
 
   <!-- Add the audio element for the BGM -->
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
