@@ -68,6 +68,7 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   <audio id="bgm" src="bgm.mp3" loop></audio>
 
   <script src="player.js"></script>
+  <script src="Sakura.js"></script>
   <script>
     // =================================================================
     // 1. CONFIGURATION & GAME STATE
@@ -77,6 +78,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const canvas = document.getElementById("MyCanvas");
     const ctx = canvas.getContext("2d");
     const video = document.getElementById("background-video");
+    
+    // Initialize Sakura animation
+    const sakura = new Sakura(canvas);
 
     // Ball Properties
     let x = canvas.width / 2;
@@ -255,7 +259,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     function draw() {
       // Clear canvas and draw background
       clearCanvas();
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Draw Sakura animation background (replaces video)
+      sakura.draw();
       
       // Draw game elements
       drawBricks();
@@ -312,7 +318,6 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       interval = setInterval(draw, 10);
       const bgm = document.getElementById("bgm");
       bgm.play();
-      video.play();
     }
 
     // Add a button to start the game

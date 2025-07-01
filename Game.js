@@ -8,6 +8,7 @@ class Game {
     this.ball = new Ball(canvas);
     this.paddle = new Paddle(canvas);
     this.brickGrid = new BrickGrid();
+    this.sakura = new Sakura(canvas); // Add Sakura animation
     
     // ゲーム状態
     this.score = 0;
@@ -148,21 +149,8 @@ class Game {
     // 背景をクリアして描画
     this.clearCanvas();
     
-    // ビデオが利用可能で再生中の場合のみ描画
-    if (this.video && this.video.readyState >= 2) {
-      try {
-        this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-      } catch (error) {
-        console.warn('ビデオ描画エラー:', error);
-        // ビデオが描画できない場合は背景色で塗りつぶし
-        this.ctx.fillStyle = '#333333';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      }
-    } else {
-      // ビデオがない場合はデフォルト背景
-      this.ctx.fillStyle = '#333333';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    // Sakura animation background (replaces video background)
+    this.sakura.draw();
     
     // ゲームオブジェクトを描画
     this.brickGrid.draw(this.ctx);

@@ -6,6 +6,7 @@ const urlsToCache = [
   './Ball.js',
   './Paddle.js', 
   './Brick.js',
+  './Sakura.js',
   './Game.js',
   './manifest.json',
   './assets/bgm.mp3',
