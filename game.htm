@@ -30,6 +30,40 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     display: block;
     margin: 0 auto;
   }
+
+  /* Mute button styles */
+  .mute-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .mute-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+  }
+
+  .mute-button.muted {
+    background: rgba(220, 53, 69, 0.8);
+  }
+
+  .mute-button.muted:hover {
+    background: rgba(220, 53, 69, 1);
+  }
 </style>
 
 </head>
@@ -64,6 +98,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 
   <!-- Add the audio element for the BGM -->
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+
+  <!-- Mute button -->
+  <button id="muteButton" class="mute-button" onclick="toggleMute()">🔊</button>
 
   <script src="player.js"></script>
   <script src="Sakura.js"></script>
@@ -142,6 +179,34 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const blockSound = new sound("assets/blockSound.mp3");
     const gameOverSound = new sound("assets/gameOver.mp3");
     const winSound = new sound("assets/winSound.mp3");
+
+    // Mute functionality
+    let isMuted = false;
+    const allSounds = [bounceSound, blockSound, gameOverSound, winSound];
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      const muteButton = document.getElementById('muteButton');
+      const bgm = document.getElementById('bgm');
+      
+      if (isMuted) {
+        // Mute all sounds
+        bgm.muted = true;
+        allSounds.forEach(sound => {
+          sound.sound.muted = true;
+        });
+        muteButton.textContent = '🔇';
+        muteButton.classList.add('muted');
+      } else {
+        // Unmute all sounds
+        bgm.muted = false;
+        allSounds.forEach(sound => {
+          sound.sound.muted = false;
+        });
+        muteButton.textContent = '🔊';
+        muteButton.classList.remove('muted');
+      }
+    }
 
     // Load custom settings after all variables are initialized
     loadCustomSettings();
