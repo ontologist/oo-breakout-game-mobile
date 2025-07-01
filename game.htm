@@ -57,15 +57,12 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   -->
   <canvas id="MyCanvas" width="480" height="320"></canvas>
   
-  <!-- Add the video element for the background -->
-  <video id="background-video" src="backgroundVideo.mp4" loop muted playsinline style="display: none;"></video>
-
   <!-- Add a button to start the game
        ゲームを開始するボタンを追加する -->
   <button id="runButton">Start game</button>
 
   <!-- Add the audio element for the BGM -->
-  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <audio id="bgm" src="assets/bgm.mp3" loop></audio>
 
   <script src="player.js"></script>
   <script src="Sakura.js"></script>
@@ -77,7 +74,6 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     // Canvas and DOM Elements
     const canvas = document.getElementById("MyCanvas");
     const ctx = canvas.getContext("2d");
-    const video = document.getElementById("background-video");
     
     // Initialize Sakura animation
     const sakura = new Sakura(canvas);
@@ -144,10 +140,10 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     }
 
     // Sound Effects
-    const bounceSound = new sound("bounce.mp3");
-    const blockSound = new sound("blockSound.mp3");
-    const gameOverSound = new sound("gameOver.mp3");
-    const winSound = new sound("winSound.mp3");
+    const bounceSound = new sound("assets/bounce.mp3");
+    const blockSound = new sound("assets/blockSound.mp3");
+    const gameOverSound = new sound("assets/gameOver.mp3");
+    const winSound = new sound("assets/winSound.mp3");
 
     // =================================================================
     // 3. DRAWING FUNCTIONS

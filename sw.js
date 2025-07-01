@@ -1,6 +1,10 @@
 const CACHE_NAME = 'breakout-game-v1';
 const urlsToCache = [
   './gameObject.htm',
+  './game.htm',
+  './aboutme.htm',
+  './hobbies.htm',
+  './job.htm',
   './index.html',
   './player.js',
   './Ball.js',
