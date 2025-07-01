@@ -8,7 +8,6 @@ const urlsToCache = [
   './Brick.js',
   './Game.js',
   './manifest.json',
-  './assets/backgroundVideo.mp4',
   './assets/bgm.mp3',
   './assets/bounce.mp3',
   './assets/blockSound.mp3',

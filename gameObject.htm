@@ -116,8 +116,8 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   -->
   <canvas id="MyCanvas" width="480" height="320"></canvas>
   
-  <!-- Add the video element for the background -->
-  <video id="background-video" src="assets/backgroundVideo.mp4" loop muted playsinline style="display: none;"></video>
+  <!-- Add the video element for the background (optional) -->
+  <!-- <video id="background-video" src="assets/backgroundVideo.mp4" loop muted playsinline style="display: none;"></video> -->
 
   <!-- Add a button to start the game
        ゲームを開始するボタンを追加する -->
@@ -147,42 +147,46 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 
     // DOM要素を取得
     const canvas = document.getElementById("MyCanvas");
-    const video = document.getElementById("background-video");
+    const video = document.getElementById("background-video") || null;
     
-    // ビデオの読み込み状態をチェック
-    video.addEventListener('loadeddata', function() {
-      console.log('ビデオが読み込まれました');
-      console.log('ビデオの長さ:', video.duration, '秒');
-      console.log('ビデオのサイズ:', video.videoWidth, 'x', video.videoHeight);
-    });
+    // ビデオの読み込み状態をチェック（ビデオが存在する場合のみ）
+    if (video) {
+      video.addEventListener('loadeddata', function() {
+        console.log('ビデオが読み込まれました');
+        console.log('ビデオの長さ:', video.duration, '秒');
+        console.log('ビデオのサイズ:', video.videoWidth, 'x', video.videoHeight);
+      });
 
-    video.addEventListener('error', function(e) {
-      console.error('ビデオエラー:', e);
-      console.error('エラーの詳細:', video.error);
-      console.log('ビデオファイル backgroundVideo.mp4 が見つからない可能性があります');
-      console.log('現在のページURL:', window.location.href);
-      console.log('ビデオのsrc:', video.src);
-    });
+      video.addEventListener('error', function(e) {
+        console.error('ビデオエラー:', e);
+        console.error('エラーの詳細:', video.error);
+        console.log('ビデオファイル backgroundVideo.mp4 が見つからない可能性があります');
+        console.log('現在のページURL:', window.location.href);
+        console.log('ビデオのsrc:', video.src);
+      });
 
-    // ビデオが読み込まれるまで待機
-    video.addEventListener('canplay', function() {
-      console.log('ビデオ再生準備完了');
-    });
+      // ビデオが読み込まれるまで待機
+      video.addEventListener('canplay', function() {
+        console.log('ビデオ再生準備完了');
+      });
 
-    // ビデオ再生開始時のイベント
-    video.addEventListener('play', function() {
-      console.log('ビデオ再生開始イベント発生');
-    });
+      // ビデオ再生開始時のイベント
+      video.addEventListener('play', function() {
+        console.log('ビデオ再生開始イベント発生');
+      });
 
-    // ビデオ再生中のイベント
-    video.addEventListener('playing', function() {
-      console.log('ビデオ再生中');
-    });
+      // ビデオ再生中のイベント
+      video.addEventListener('playing', function() {
+        console.log('ビデオ再生中');
+      });
 
-    // 初期状態をログ出力
-    console.log('ビデオ要素:', video);
-    console.log('ビデオsrc:', video.src);
-    console.log('ビデオreadyState:', video.readyState);
+      // 初期状態をログ出力
+      console.log('ビデオ要素:', video);
+      console.log('ビデオsrc:', video.src);
+      console.log('ビデオreadyState:', video.readyState);
+    } else {
+      console.log('ビデオ要素が見つかりません - 背景なしでゲームを実行します');
+    }
 
     // Touch gesture variables
     let touchStartX = 0;
@@ -289,17 +293,24 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     document.getElementById("runButton").addEventListener("click", function () {
       console.log('ゲーム開始ボタンがクリックされました');
       
-      // ビデオの再生を試行
-      video.play().then(() => {
-        console.log('ビデオ再生開始');
+      // ビデオの再生を試行（ビデオが存在する場合のみ）
+      if (video) {
+        video.play().then(() => {
+          console.log('ビデオ再生開始');
+          game.startGame();
+          this.disabled = true;
+        }).catch((error) => {
+          console.error('ビデオ再生エラー:', error);
+          // ビデオなしでもゲームを開始
+          game.startGame();
+          this.disabled = true;
+        });
+      } else {
+        // ビデオなしでゲームを開始
+        console.log('ビデオなしでゲームを開始');
         game.startGame();
         this.disabled = true;
-      }).catch((error) => {
-        console.error('ビデオ再生エラー:', error);
-        // ビデオなしでもゲームを開始
-        game.startGame();
-        this.disabled = true;
-      });
+      }
     });
 
     // Register service worker for PWA
