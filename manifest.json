@@ -1,0 +1,26 @@
+{
+  "name": "Object-Oriented Breakout Game",
+  "short_name": "Breakout OOP",
+  "description": "A fun breakout game built with object-oriented JavaScript",
+  "start_url": "./gameObject.htm",
+  "display": "standalone",
+  "background_color": "#333333",
+  "theme_color": "#0095DD",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "ja"
+} 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <h2>App Icon Generator</h2>
+    <p>This will generate icons for your PWA. Right-click and save each canvas as PNG.</p>
+    
+    <h3>192x192 Icon:</h3>
+    <canvas id="icon192" width="192" height="192"></canvas>
+    <br><br>
+    
+    <h3>512x512 Icon:</h3>
+    <canvas id="icon512" width="512" height="512"></canvas>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#0095DD';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Border
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.05;
+            ctx.strokeRect(size * 0.1, size * 0.1, size * 0.8, size * 0.8);
+            
+            // Ball
+            ctx.fillStyle = '#FFEE58';
+            ctx.beginPath();
+            ctx.arc(size * 0.3, size * 0.4, size * 0.08, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Paddle
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(size * 0.2, size * 0.75, size * 0.6, size * 0.05);
+            
+            // Bricks
+            const brickWidth = size * 0.12;
+            const brickHeight = size * 0.04;
+            const colors = ['#DD9500', '#95DD00', '#DD0095'];
+            
+            for (let row = 0; row < 3; row++) {
+                ctx.fillStyle = colors[row];
+                for (let col = 0; col < 5; col++) {
+                    const x = size * 0.15 + col * brickWidth * 1.1;
+                    const y = size * 0.2 + row * brickHeight * 1.2;
+                    ctx.fillRect(x, y, brickWidth, brickHeight);
+                }
+            }
+            
+            // Game title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.08}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('BREAKOUT', size * 0.5, size * 0.9);
+        }
+        
+        createIcon('icon192', 192);
+        createIcon('icon512', 512);
+    </script>
+    
+    <div style="margin-top: 20px;">
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Right-click on the first canvas</li>
+            <li>Select "Save image as..."</li>
+            <li>Save as "icon-192.png"</li>
+            <li>Repeat for the second canvas and save as "icon-512.png"</li>
+            <li>Place both PNG files in your MySite folder</li>
+        </ol>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title>My Game</title>
+<meta charset="utf-8">
+
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js">
+</script>
+<![endif]-->
+
+<style>
+body {font-family: Verdana, sans-serif; font-size:0.8em;}
+header, nav, section, article, footer
+{border:1px solid grey; margin:5px; padding:8px;}
+nav ul {margin:0; padding:0;}
+nav ul li {display:inline; margin:5px;}
+
+canvas { background: #eee; display: block; margin: 0 auto; }
+
+</style>
+
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+  canvas {
+    background: rgb(200, 200, 200);
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>関学太郎</h1>
+</header>
+
+<nav>
+<ul>
+  <li><a href="aboutme.htm">About me</a></li>
+  <li><a href="hobbies.htm">Hobbies</a></li>
+  <li><a href="job.htm">Job</a></li>
+  <li><a href="game.htm">Game</a></li>
+</ul>
+</nav>
+
+<section>
+  <!-- 
+  create the canvas object
+  キャンバスオブジェクトの生成
+  -->
+  <canvas id="MyCanvas" width="480" height="320"></canvas>
+  
+  <!-- Add the video element for the background -->
+  <video id="background-video" src="backgroundVideo.mp4" loop muted playsinline style="display: none;"></video>
+
+  <!-- Add a button to start the game
+       ゲームを開始するボタンを追加する -->
+  <button id="runButton">Start game</button>
+
+  <!-- Add the audio element for the BGM -->
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+
+  <script src="player.js"></script>
+  <script>
+    // =================================================================
+    // 1. CONFIGURATION & GAME STATE
+    // =================================================================
+
+    // Canvas and DOM Elements
+    const canvas = document.getElementById("MyCanvas");
+    const ctx = canvas.getContext("2d");
+    const video = document.getElementById("background-video");
+
+    // Ball Properties
+    let x = canvas.width / 2;
+    let y = canvas.height - 30;
+    let dx = 2;
+    let dy = -2;
+    const radius = 10;
+
+    // Paddle Properties
+    const paddleHeight = 10;
+    const paddleWidth = 75;
+    let paddleX = (canvas.width - paddleWidth) / 2;
+
+    // Brick Properties
+    const brickRowCount = 3;
+    const brickColumnCount = 5;
+    const brickWidth = 75;
+    const brickHeight = 20;
+    const brickPadding = 10;
+    const brickOffsetTop = 30;
+    const brickOffsetLeft = 30;
+    const brickColor = {
+      0: "#0095DD",
+      1: "#DD9500",
+      2: "#95DD00",
+      3: "#DD0095",
+      4: "#00DD95"
+    };
+
+    // Game State
+    let score = 0;
+    let lives = 3;
+    let rightPressed = false;
+    let leftPressed = false;
+    var interval; // This will hold the game loop interval
+
+    // Brick Array Initialization
+    const bricks = [];
+    for (let c = 0; c < brickColumnCount; c++) {
+      bricks[c] = [];
+      for (let r = 0; r < brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0, status: 1 };
+      }
+    }
+    const brickCount = brickRowCount * brickColumnCount;
+
+    // =================================================================
+    // 2. AUDIO HANDLING
+    // =================================================================
+    
+    // Sound Object Definition
+    function sound(src) {
+      this.sound = document.createElement("audio");
+      this.sound.src = src;
+      this.sound.setAttribute("preload", "auto");
+      this.sound.setAttribute("controls", "none");
+      this.sound.style.display = "none";
+      document.body.appendChild(this.sound);
+      this.play = function(){ this.sound.play(); }
+      this.stop = function(){ this.sound.pause(); }
+    }
+
+    // Sound Effects
+    const bounceSound = new sound("bounce.mp3");
+    const blockSound = new sound("blockSound.mp3");
+    const gameOverSound = new sound("gameOver.mp3");
+    const winSound = new sound("winSound.mp3");
+
+    // =================================================================
+    // 3. DRAWING FUNCTIONS
+    // =================================================================
+
+    function drawPaddle() {
+      ctx.beginPath();
+      ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+      ctx.fillStyle = "#0095DD";  
+      ctx.fill(); 
+      ctx.closePath();
+    }
+
+    function drawBricks() { 
+      for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+          if (bricks[c][r].status == 1) {
+            const bx = c * (brickWidth + brickPadding) + brickOffsetLeft;
+            const by = r * (brickHeight + brickPadding) + brickOffsetTop;
+            bricks[c][r].x = bx;
+            bricks[c][r].y = by;
+            ctx.beginPath();
+            ctx.rect(bx, by, brickWidth, brickHeight);
+            ctx.fillStyle = brickColor[c];
+            ctx.fill();
+            ctx.closePath();
+          } 
+        }
+      }
+    }
+
+    function drawScore() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#0095DD";
+      ctx.fillText("Score: " + score, 8, 20);
+    }
+
+    function drawLives() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#0095DD";
+      ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+    }
+
+    // =================================================================
+    // 4. INPUT HANDLING
+    // =================================================================
+
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+
+    function keyDownHandler(e) {
+      if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+      } else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+      } else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+      }
+    }
+
+    function mouseMoveHandler(e) {
+      const relativeX = e.clientX - canvas.offsetLeft;
+      if (relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth / 2;
+      }
+    }
+
+    // =================================================================
+    // 5. GAME LOGIC
+    // =================================================================
+
+    function collisionDetection() {
+      for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+          const b = bricks[c][r];
+          if (b.status == 1) {
+            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+              dy = -dy;
+              blockSound.play();
+              b.status = 0;
+              score++;
+              if (score == brickCount) {
+                bgm.stop();
+                winSound.play();
+                alert("Congratulations! You win!");
+                document.location.reload();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // =================================================================
+    // 6. MAIN GAME LOOP & CONTROL
+    // =================================================================
+
+    function draw() {
+      // Clear canvas and draw background
+      clearCanvas();
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Draw game elements
+      drawBricks();
+      drawPlayer(ctx, x, y, radius);
+      drawPaddle();
+      drawScore();
+      drawLives();
+      
+      // Handle collisions
+      collisionDetection();
+
+      // Wall collision logic
+      if (x + dx > canvas.width - radius || x + dx < radius) {
+        dx = -dx;
+        bounceSound.play();
+      }
+      if (y + dy < radius) {
+        dy = -dy;
+        bounceSound.play();
+      } else if (y + dy > canvas.height - radius) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+          dy = -dy;
+          bounceSound.play();
+        } else {
+          lives--;
+          if (!lives) {
+            gameOverSound.play();
+            bgm.stop();
+            alert("GAME OVER");
+            document.location.reload();
+          } else {
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width - paddleWidth) / 2;
+          }
+        }
+      }
+
+      // Paddle movement logic
+      if (rightPressed && paddleX < canvas.width - paddleWidth) {
+        paddleX += 7;
+      } else if (leftPressed && paddleX > 0) {
+        paddleX -= 7;
+      }
+
+      // Ball movement
+      x += dx;
+      y += dy;
+    }
+
+    function startGame() {
+      interval = setInterval(draw, 10);
+      const bgm = document.getElementById("bgm");
+      bgm.play();
+      video.play();
+    }
+
+    // Add a button to start the game
+    document.getElementById("runButton").addEventListener("click", function () {
+      startGame();
+      this.disabled = true; 
+    });
+  </script>
+</section>
+
+<footer>
+<p>&copy; 2023 Yuri Tijerino. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
