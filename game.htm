@@ -209,7 +209,10 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     }
 
     // Load custom settings after all variables are initialized
-    loadCustomSettings();
+    // Use setTimeout to ensure DOM is fully loaded
+    setTimeout(() => {
+      loadCustomSettings();
+    }, 100);
 
     // =================================================================
     // 3. DRAWING FUNCTIONS
@@ -299,7 +302,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
               b.status = 0;
               score++;
               if (score == brickCount) {
-                bgm.stop();
+                const bgm = document.getElementById("bgm");
+                bgm.pause();
+                bgm.currentTime = 0;
                 winSound.play();
                 alert("Congratulations! You win!");
                 document.location.reload();
@@ -432,7 +437,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
           lives--;
           if (!lives) {
             gameOverSound.play();
-            bgm.stop();
+            const bgm = document.getElementById("bgm");
+            bgm.pause();
+            bgm.currentTime = 0;
             alert("GAME OVER");
             document.location.reload();
           } else {
