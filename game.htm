@@ -76,36 +76,40 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 
   /* Mute button styles */
   .mute-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.15);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0.4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .mute-button:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
     transform: scale(1.1);
   }
 
   .mute-button.muted {
-    background: rgba(220, 53, 69, 0.8);
+    background: rgba(220, 53, 69, 0.2);
+    opacity: 0.5;
   }
 
   .mute-button.muted:hover {
-    background: rgba(220, 53, 69, 1);
+    background: rgba(220, 53, 69, 0.4);
+    opacity: 0.9;
   }
 </style>
 
@@ -133,10 +137,12 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   create the canvas object
   キャンバスオブジェクトの生成
   -->
-  <div class="canvas-container" style="position: relative; display: inline-block; margin: 0 auto;">
-    <canvas id="MyCanvas" width="480" height="320"></canvas>
-    <!-- Mute button positioned relative to canvas -->
-    <button id="muteButton" class="mute-button" onclick="toggleMute()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">🔊</button>
+  <div style="text-align: center; margin: 20px auto;">
+    <div class="canvas-container" style="position: relative; display: inline-block;">
+      <canvas id="MyCanvas" width="480" height="320"></canvas>
+      <!-- Mute button positioned relative to canvas -->
+      <button id="muteButton" class="mute-button" onclick="toggleMute()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(0, 0, 0, 0.2); color: white; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.5;">🔊</button>
+    </div>
   </div>
   
   <!-- Add a button to start the game - centered below canvas -->

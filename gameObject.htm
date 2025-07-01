@@ -90,38 +90,84 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     margin: 0 auto;
   }
 
+  /* Canvas container for positioning mute button */
+  .canvas-container {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+  }
+
   /* Mute button styles */
   .mute-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.15);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0.4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .mute-button:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
     transform: scale(1.1);
   }
 
   .mute-button.muted {
-    background: rgba(220, 53, 69, 0.8);
+    background: rgba(220, 53, 69, 0.2);
+    opacity: 0.5;
   }
 
   .mute-button.muted:hover {
-    background: rgba(220, 53, 69, 1);
+    background: rgba(220, 53, 69, 0.4);
+    opacity: 0.9;
+  }
+
+  /* Start game button styles */
+  #runButton {
+    font-size: 28px !important;
+    padding: 18px 40px !important;
+    background: #4CAF50 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3) !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+  }
+
+  #runButton:hover {
+    background: #45a049 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
+  }
+
+  #runButton:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+  }
+
+  #runButton:disabled {
+    background: #cccccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
   }
 </style>
 
@@ -149,14 +195,21 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   create the canvas object
   キャンバスオブジェクトの生成
   -->
-  <canvas id="MyCanvas" width="480" height="320"></canvas>
+  <div style="text-align: center; margin: 20px auto;">
+    <div class="canvas-container" style="position: relative; display: inline-block;">
+      <canvas id="MyCanvas" width="480" height="320"></canvas>
+      <!-- Mute button positioned relative to canvas -->
+      <button id="muteButton" class="mute-button" onclick="toggleMute()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(0, 0, 0, 0.15); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.4;">🔊</button>
+    </div>
+  </div>
   
   <!-- Add the video element for the background (optional) -->
   <!-- <video id="background-video" src="assets/backgroundVideo.mp4" loop muted playsinline style="display: none;"></video> -->
 
-  <!-- Add a button to start the game
-       ゲームを開始するボタンを追加する -->
-  <button id="runButton">Start Game</button>
+  <!-- Add a button to start the game - centered below canvas -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button id="runButton" style="font-size: 24px; padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease;">Start Game</button>
+  </div>
 
   <!-- Mobile control buttons -->
   <div class="mobile-controls">
@@ -166,9 +219,6 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 
   <!-- Add the audio element for the BGM -->
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
-
-  <!-- Mute button -->
-  <button id="muteButton" class="mute-button" onclick="toggleMute()">🔊</button>
 
   <!-- Load all the class files -->
   <script src="player.js"></script>
