@@ -206,15 +206,15 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   <!-- Add the video element for the background (optional) -->
   <!-- <video id="background-video" src="assets/backgroundVideo.mp4" loop muted playsinline style="display: none;"></video> -->
 
-  <!-- Add a button to start the game - centered below canvas -->
-  <div style="text-align: center; margin-top: 20px;">
-    <button id="runButton" style="font-size: 24px; padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease;">Start Game</button>
-  </div>
-
   <!-- Mobile control buttons -->
   <div class="mobile-controls">
     <button class="control-button" id="leftButton">◀</button>
     <button class="control-button" id="rightButton">▶</button>
+  </div>
+
+  <!-- Add a button to start the game - centered below mobile controls -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button id="runButton" style="font-size: 24px; padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease;">Start Game</button>
   </div>
 
   <!-- Add the audio element for the BGM -->
