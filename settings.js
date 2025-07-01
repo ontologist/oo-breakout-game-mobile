@@ -437,4 +437,140 @@ function showAudioMessage(message, type) {
     setTimeout(() => {
         messageDiv.textContent = '';
     }, 5000);
+}
+
+// Generate and play a win sound using Web Audio API
+function generateAndPlayWinSound() {
+    try {
+        // Create audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create a win sound (ascending notes)
+        const notes = [261.63, 329.63, 392, 523.25]; // C4, E4, G4, C5
+        const duration = 0.3; // seconds per note
+        
+        notes.forEach((frequency, index) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Connect oscillator to gain to speakers
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Set up the oscillator
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * duration);
+            
+            // Set up the gain (volume envelope)
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime + index * duration);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + index * duration + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (index + 1) * duration);
+            
+            // Start and stop the oscillator
+            oscillator.start(audioContext.currentTime + index * duration);
+            oscillator.stop(audioContext.currentTime + (index + 1) * duration);
+        });
+        
+        showAudioMessage('Win sound generated and played!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating sound:', error);
+        showAudioMessage('Error generating sound: ' + error.message, 'error');
+    }
+}
+
+// Generate bounce sound
+function generateBounceSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Bounce sound: quick frequency sweep
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+        
+        // Quick volume envelope
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+        
+        showAudioMessage('Bounce sound generated!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating bounce sound:', error);
+        showAudioMessage('Error generating bounce sound: ' + error.message, 'error');
+    }
+}
+
+// Generate block hit sound
+function generateBlockSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Block hit sound: sharp attack with noise
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.05);
+        
+        // Sharp attack
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.05);
+        
+        showAudioMessage('Block hit sound generated!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating block sound:', error);
+        showAudioMessage('Error generating block sound: ' + error.message, 'error');
+    }
+}
+
+// Generate game over sound
+function generateGameOverSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Game over sound: descending notes
+        const notes = [523.25, 392, 329.63, 261.63]; // C5, G4, E4, C4
+        const duration = 0.4; // seconds per note
+        
+        notes.forEach((frequency, index) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * duration);
+            
+            // Sad, slow envelope
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime + index * duration);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + index * duration + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (index + 1) * duration);
+            
+            oscillator.start(audioContext.currentTime + index * duration);
+            oscillator.stop(audioContext.currentTime + (index + 1) * duration);
+        });
+        
+        showAudioMessage('Game over sound generated!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating game over sound:', error);
+        showAudioMessage('Error generating game over sound: ' + error.message, 'error');
+    }
 } 
