@@ -2,18 +2,29 @@
 class Sakura {
     constructor(canvas) {
         console.log('Sakura constructor called');
+        console.log('Browser:', navigator.userAgent);
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        
+        // Check for canvas support
+        if (!this.ctx) {
+            console.error('Canvas context not supported');
+            return;
+        }
+        
         this.petals = [];
         this.numPetals = 50; // Reduced for performance in game
         
         // Initialize immediately without waiting for external images
-        this.initPetals();
-        this.isReady = true;
-        
-        // Create gradient backgrounds
-        this.createBackgrounds();
-        console.log('Sakura initialized with', this.numPetals, 'petals');
+        try {
+            this.initPetals();
+            this.createBackgrounds();
+            this.isReady = true;
+            console.log('Sakura initialized with', this.numPetals, 'petals');
+        } catch (error) {
+            console.error('Sakura initialization error:', error);
+            this.isReady = false;
+        }
     }
     
     createBackgrounds() {
@@ -137,29 +148,41 @@ class Sakura {
     }
     
     drawCherryBlossomPetal(size, color) {
-        // Draw a stylized 5-petal cherry blossom
-        this.ctx.fillStyle = color;
-        this.ctx.strokeStyle = '#FF69B4';
-        this.ctx.lineWidth = 0.5;
-        
-        for (let i = 0; i < 5; i++) {
-            this.ctx.save();
-            this.ctx.rotate((i * Math.PI * 2) / 5);
+        try {
+            // Draw a stylized 5-petal cherry blossom using compatible methods
+            this.ctx.fillStyle = color;
+            this.ctx.strokeStyle = '#FF69B4';
+            this.ctx.lineWidth = 0.5;
             
-            // Draw petal shape
+            for (let i = 0; i < 5; i++) {
+                this.ctx.save();
+                this.ctx.rotate((i * Math.PI * 2) / 5);
+                
+                // Draw petal shape using bezier curves (more compatible than ellipse)
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, -size/6);
+                this.ctx.quadraticCurveTo(-size/6, -size/2, 0, -size/2);
+                this.ctx.quadraticCurveTo(size/6, -size/2, 0, -size/6);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+                
+                this.ctx.restore();
+            }
+            
+            // Draw center
+            this.ctx.fillStyle = '#FFD700'; // Gold center
             this.ctx.beginPath();
-            this.ctx.ellipse(0, -size/3, size/4, size/2, 0, 0, Math.PI * 2);
+            this.ctx.arc(0, 0, size/8, 0, Math.PI * 2);
             this.ctx.fill();
-            this.ctx.stroke();
-            
-            this.ctx.restore();
+        } catch (error) {
+            // Fallback: draw simple circle if complex petal fails
+            console.warn('Complex petal drawing failed, using simple circle:', error);
+            this.ctx.fillStyle = color;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, size/2, 0, Math.PI * 2);
+            this.ctx.fill();
         }
-        
-        // Draw center
-        this.ctx.fillStyle = '#FFD700'; // Gold center
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, size/8, 0, Math.PI * 2);
-        this.ctx.fill();
     }
     
     update() {
@@ -188,8 +211,14 @@ class Sakura {
     }
     
     draw() {
-        this.drawBackground();
-        this.drawPetals();
-        this.update();
+        if (!this.isReady || !this.ctx) return;
+        
+        try {
+            this.drawBackground();
+            this.drawPetals();
+            this.update();
+        } catch (error) {
+            console.error('Sakura draw error:', error);
+        }
     }
 } 
