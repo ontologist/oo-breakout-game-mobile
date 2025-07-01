@@ -161,7 +161,14 @@ function handleVideoSelect(e) {
 }
 
 function handleVideoFile(file) {
-    // Check file type first - support MP4, MOV, WebM, OGV
+    // Check file size first (10MB limit for upload)
+    const maxUploadSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxUploadSize) {
+        showVideoMessage(`File too large! Maximum upload size is 10MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`, 'error');
+        return;
+    }
+    
+    // Check file type - support MP4, MOV, WebM, OGV
     const allowedTypes = ['video/mp4', 'video/quicktime', 'video/webm', 'video/ogg'];
     const fileExtension = file.name.toLowerCase().split('.').pop();
     const allowedExtensions = ['mp4', 'mov', 'webm', 'ogv', 'ogg'];
@@ -171,11 +178,11 @@ function handleVideoFile(file) {
         return;
     }
     
-    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+    const targetSize = 2 * 1024 * 1024; // 2MB target for storage
     
-    if (file.size > maxSize) {
-        showVideoMessage(`File size: ${(file.size / 1024 / 1024).toFixed(1)}MB. Compressing to under 2MB...`, 'info');
-        compressVideo(file, maxSize);
+    if (file.size > targetSize) {
+        showVideoMessage(`File size: ${(file.size / 1024 / 1024).toFixed(1)}MB. Compressing to under 2MB for optimal game performance...`, 'info');
+        compressVideo(file, targetSize);
     } else {
         processVideo(file);
     }
