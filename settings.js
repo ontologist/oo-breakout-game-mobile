@@ -161,14 +161,7 @@ function handleVideoSelect(e) {
 }
 
 function handleVideoFile(file) {
-    // Check file size (2MB limit)
-    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-    if (file.size > maxSize) {
-        showVideoMessage('File too large! Maximum size is 2MB.', 'error');
-        return;
-    }
-    
-    // Check file type - support MP4, MOV, WebM, OGV
+    // Check file type first - support MP4, MOV, WebM, OGV
     const allowedTypes = ['video/mp4', 'video/quicktime', 'video/webm', 'video/ogg'];
     const fileExtension = file.name.toLowerCase().split('.').pop();
     const allowedExtensions = ['mp4', 'mov', 'webm', 'ogv', 'ogg'];
@@ -178,19 +171,122 @@ function handleVideoFile(file) {
         return;
     }
     
-    // Convert to base64 and store
+    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+    
+    if (file.size > maxSize) {
+        showVideoMessage(`File size: ${(file.size / 1024 / 1024).toFixed(1)}MB. Compressing to under 2MB...`, 'info');
+        compressVideo(file, maxSize);
+    } else {
+        processVideo(file);
+    }
+}
+
+function compressVideo(file, maxSize) {
+    const video = document.createElement('video');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    video.addEventListener('loadedmetadata', function() {
+        // Set canvas dimensions (reduce resolution if needed)
+        const aspectRatio = video.videoWidth / video.videoHeight;
+        let targetWidth = Math.min(video.videoWidth, 640); // Max width 640px
+        let targetHeight = targetWidth / aspectRatio;
+        
+        // Further reduce if still too large
+        if (targetHeight > 480) {
+            targetHeight = 480;
+            targetWidth = targetHeight * aspectRatio;
+        }
+        
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        
+        // Create video recorder
+        const stream = canvas.captureStream(15); // 15 FPS for compression
+        const mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 400000 // 400kbps for good compression
+        });
+        
+        const chunks = [];
+        
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                chunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = function() {
+            const compressedBlob = new Blob(chunks, { type: 'video/webm' });
+            
+            if (compressedBlob.size <= maxSize) {
+                // Convert compressed video to base64
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const videoData = e.target.result;
+                    localStorage.setItem('gameBackgroundVideo', videoData);
+                    displayVideoPreview(videoData);
+                    const originalSize = (file.size / 1024 / 1024).toFixed(1);
+                    const compressedSize = (compressedBlob.size / 1024 / 1024).toFixed(1);
+                    showVideoMessage(`Video compressed successfully! ${originalSize}MB → ${compressedSize}MB`, 'success');
+                    saveSettings();
+                };
+                reader.readAsDataURL(compressedBlob);
+            } else {
+                // If still too large, try more aggressive compression
+                showVideoMessage('Video still too large after compression. Please use a shorter video or lower resolution.', 'error');
+            }
+        };
+        
+        // Start recording
+        mediaRecorder.start();
+        
+        let currentTime = 0;
+        const duration = Math.min(video.duration, 30); // Limit to 30 seconds max
+        const fps = 15;
+        const frameInterval = 1000 / fps;
+        
+        function captureFrame() {
+            if (currentTime < duration) {
+                video.currentTime = currentTime;
+                
+                video.addEventListener('seeked', function onSeeked() {
+                    video.removeEventListener('seeked', onSeeked);
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    currentTime += 1 / fps;
+                    setTimeout(captureFrame, frameInterval);
+                });
+            } else {
+                mediaRecorder.stop();
+            }
+        }
+        
+        captureFrame();
+    });
+    
+    video.addEventListener('error', function() {
+        showVideoMessage('Error processing video for compression. Please try a different file.', 'error');
+    });
+    
+    video.src = URL.createObjectURL(file);
+    video.load();
+}
+
+function processVideo(file) {
+    // Convert to base64 and store (original function for files under 2MB)
     const reader = new FileReader();
     reader.onload = function(e) {
         const videoData = e.target.result;
         localStorage.setItem('gameBackgroundVideo', videoData);
         displayVideoPreview(videoData);
         const fileExtension = file.name.split('.').pop().toUpperCase();
+        const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
         
         // Show appropriate message based on file type
         if (fileExtension === 'MOV') {
-            showVideoMessage(`QuickTime (.mov) video uploaded and saved successfully!`, 'success');
+            showVideoMessage(`QuickTime (.mov) video uploaded successfully! Size: ${fileSizeMB}MB`, 'success');
         } else {
-            showVideoMessage(`${fileExtension} video uploaded and saved successfully!`, 'success');
+            showVideoMessage(`${fileExtension} video uploaded successfully! Size: ${fileSizeMB}MB`, 'success');
         }
         
         saveSettings();
@@ -448,12 +544,23 @@ function showMessage(message, type) {
 
 function showVideoMessage(message, type) {
     const messageDiv = document.getElementById('videoMessage');
-    messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+    
+    if (type === 'error') {
+        messageDiv.className = 'error-message';
+    } else if (type === 'info') {
+        messageDiv.className = 'info-message';
+    } else {
+        messageDiv.className = 'success-message';
+    }
+    
     messageDiv.textContent = message;
     
+    // Clear message after 8 seconds for compression messages, 5 seconds for others
+    const timeout = type === 'info' ? 8000 : 5000;
     setTimeout(() => {
         messageDiv.textContent = '';
-    }, 5000);
+        messageDiv.className = '';
+    }, timeout);
 }
 
 function showAudioMessage(message, type) {
