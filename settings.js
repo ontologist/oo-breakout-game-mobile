@@ -168,9 +168,13 @@ function handleVideoFile(file) {
         return;
     }
     
-    // Check file type
-    if (!file.type.startsWith('video/')) {
-        showVideoMessage('Please select a valid video file.', 'error');
+    // Check file type - support MP4, MOV, WebM, OGV
+    const allowedTypes = ['video/mp4', 'video/quicktime', 'video/webm', 'video/ogg'];
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    const allowedExtensions = ['mp4', 'mov', 'webm', 'ogv', 'ogg'];
+    
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+        showVideoMessage('Unsupported video format. Please use MP4, MOV, WebM, or OGV files.', 'error');
         return;
     }
     
@@ -180,7 +184,8 @@ function handleVideoFile(file) {
         const videoData = e.target.result;
         localStorage.setItem('gameBackgroundVideo', videoData);
         displayVideoPreview(videoData);
-        showVideoMessage('Video uploaded successfully!', 'success');
+        const fileExtension = file.name.split('.').pop().toUpperCase();
+        showVideoMessage(`${fileExtension} video uploaded successfully! Both MP4 and MOV formats are fully supported.`, 'success');
         saveSettings();
     };
     reader.readAsDataURL(file);
@@ -197,7 +202,8 @@ function displayVideoPreview(videoData) {
     videoPreview.addEventListener('loadedmetadata', function() {
         const duration = Math.round(videoPreview.duration);
         const size = Math.round(videoData.length * 0.75 / 1024); // Approximate size in KB
-        videoInfo.textContent = `Duration: ${duration}s | Approximate size: ${size}KB`;
+        const format = videoData.substring(5, videoData.indexOf(';')); // Extract MIME type
+        videoInfo.textContent = `Format: ${format} | Duration: ${duration}s | Size: ~${size}KB`;
     });
 }
 
