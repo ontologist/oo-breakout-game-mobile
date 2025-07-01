@@ -1,6 +1,7 @@
 // Sakura.js - Cherry blossom petal animation class
 class Sakura {
     constructor(canvas) {
+        console.log('Sakura constructor called');
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.petals = [];
@@ -12,6 +13,7 @@ class Sakura {
         
         // Create gradient backgrounds
         this.createBackgrounds();
+        console.log('Sakura initialized with', this.numPetals, 'petals');
     }
     
     createBackgrounds() {

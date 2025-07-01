@@ -146,10 +146,7 @@ class Game {
   }
 
   draw() {
-    // 背景をクリアして描画
-    this.clearCanvas();
-    
-    // Sakura animation background (replaces video background)
+    // Sakura animation background (draws its own background)
     this.sakura.draw();
     
     // ゲームオブジェクトを描画
