@@ -76,9 +76,6 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const canvas = document.getElementById("MyCanvas");
     const ctx = canvas.getContext("2d");
     
-    // Load custom settings
-    loadCustomSettings();
-
     // Ball Properties
     let x = canvas.width / 2;
     let y = canvas.height - 30;
@@ -145,6 +142,9 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const blockSound = new sound("assets/blockSound.mp3");
     const gameOverSound = new sound("assets/gameOver.mp3");
     const winSound = new sound("assets/winSound.mp3");
+
+    // Load custom settings after all variables are initialized
+    loadCustomSettings();
 
     // =================================================================
     // 3. DRAWING FUNCTIONS
