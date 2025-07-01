@@ -3,6 +3,7 @@
 <head>
 <title>My Game</title>
 <meta charset="utf-8">
+<!-- Cache Buster: v2024-01-20-2 -->
 
 <!--[if lt IE 9]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js">
@@ -180,14 +181,22 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const gameOverSound = new sound("assets/gameOver.mp3");
     const winSound = new sound("assets/winSound.mp3");
 
+    // Debug: Check if mute button exists
+    console.log('Checking for mute button...');
+    const muteButtonCheck = document.getElementById('muteButton');
+    console.log('Mute button found:', muteButtonCheck);
+
     // Mute functionality
     let isMuted = false;
     const allSounds = [bounceSound, blockSound, gameOverSound, winSound];
 
     function toggleMute() {
+      console.log('Mute button clicked!');
       isMuted = !isMuted;
       const muteButton = document.getElementById('muteButton');
       const bgm = document.getElementById('bgm');
+      console.log('Mute button element:', muteButton);
+      console.log('BGM element:', bgm);
       
       if (isMuted) {
         // Mute all sounds
@@ -208,11 +217,22 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       }
     }
 
-    // Load custom settings after all variables are initialized
-    // Use setTimeout to ensure DOM is fully loaded
-    setTimeout(() => {
+    // Load custom settings after DOM is completely ready
+    document.addEventListener('DOMContentLoaded', function() {
       loadCustomSettings();
-    }, 100);
+    });
+    
+    // Fallback for browsers that don't support DOMContentLoaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCustomSettings();
+      });
+    } else {
+      // DOM is already loaded
+      setTimeout(() => {
+        loadCustomSettings();
+      }, 100);
+    }
 
     // =================================================================
     // 3. DRAWING FUNCTIONS
