@@ -185,7 +185,14 @@ function handleVideoFile(file) {
         localStorage.setItem('gameBackgroundVideo', videoData);
         displayVideoPreview(videoData);
         const fileExtension = file.name.split('.').pop().toUpperCase();
-        showVideoMessage(`${fileExtension} video uploaded successfully! Both MP4 and MOV formats are fully supported.`, 'success');
+        
+        // Show appropriate message based on file type
+        if (fileExtension === 'MOV') {
+            showVideoMessage(`QuickTime (.mov) video uploaded and saved successfully!`, 'success');
+        } else {
+            showVideoMessage(`${fileExtension} video uploaded and saved successfully!`, 'success');
+        }
+        
         saveSettings();
     };
     reader.readAsDataURL(file);
@@ -209,11 +216,25 @@ function displayVideoPreview(videoData) {
 
 function saveBackgroundVideo() {
     const videoData = localStorage.getItem('gameBackgroundVideo');
+    console.log('Checking for video data...', videoData ? 'Found' : 'Not found');
+    console.log('All localStorage keys:', Object.keys(localStorage));
+    
     if (videoData) {
-        showVideoMessage('Background video saved to games!', 'success');
+        // Force save to all game storage keys
+        localStorage.setItem('gameBrickColors', localStorage.getItem('gameBrickColors') || JSON.stringify(DEFAULT_SETTINGS.brickColors));
         saveSettings();
+        showVideoMessage('Background video settings applied to games!', 'success');
     } else {
-        showVideoMessage('No video to save. Please upload a video first.', 'error');
+        // Check if video preview is visible (means video was uploaded but not stored properly)
+        const previewArea = document.getElementById('videoPreviewArea');
+        const videoPreview = document.getElementById('videoPreview');
+        
+        if (previewArea.style.display !== 'none' && videoPreview.src) {
+            // Video is previewing but not in localStorage - this is the bug
+            showVideoMessage('Video is loaded but not saved. Try uploading again.', 'error');
+        } else {
+            showVideoMessage('No video to save. Please upload a video first.', 'error');
+        }
     }
 }
 
