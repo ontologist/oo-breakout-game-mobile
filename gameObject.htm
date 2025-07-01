@@ -375,8 +375,8 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       e.preventDefault();
     });
 
-    // ゲームインスタンスを作成
-    const game = new Game(canvas, video);
+    // ゲームインスタンスを作成 (global for settings integration)
+    window.game = new Game(canvas, video);
 
     // Mute functionality
     let isMuted = false;

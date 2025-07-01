@@ -99,6 +99,13 @@ class Game {
       }
     }
 
+    // Load custom paddle color
+    const savedPaddleColor = localStorage.getItem('gamePaddleColor');
+    if (savedPaddleColor) {
+      this.paddle.setColor(savedPaddleColor);
+      console.log('Game: Loaded custom paddle color:', savedPaddleColor);
+    }
+
     // Load custom background video
     this.customVideo = localStorage.getItem('gameBackgroundVideo');
     if (this.customVideo) {
@@ -107,6 +114,11 @@ class Game {
 
     // Load custom audio
     this.loadCustomAudio();
+  }
+
+  // Method to reload settings (called when settings are updated)
+  reloadCustomSettings() {
+    this.loadCustomSettings();
   }
 
   setupCustomVideo() {

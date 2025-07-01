@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
         3: "#DD0095",
         4: "#00DD95"
     },
+    paddleColor: "#0095DD",
     backgroundVideo: null,
     audio: {
         bgm: null,
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     setupEventListeners();
     updateBrickPreview();
+    updatePaddlePreview();
 });
 
 // Setup event listeners
@@ -35,6 +37,9 @@ function setupEventListeners() {
     for (let i = 0; i < 5; i++) {
         document.getElementById(`color${i}`).addEventListener('change', updateBrickPreview);
     }
+    
+    // Paddle color change
+    document.getElementById('paddleColor').addEventListener('change', updatePaddlePreview);
     
     // Video upload drag and drop
     const videoUploadArea = document.getElementById('videoUploadArea');
@@ -71,6 +76,12 @@ function loadSettings() {
                 }
             }
             
+            // Load paddle color
+            if (settings.paddleColor) {
+                document.getElementById('paddleColor').value = settings.paddleColor;
+                updatePaddlePreview();
+            }
+            
             // Load background video
             if (settings.backgroundVideo) {
                 displayVideoPreview(settings.backgroundVideo);
@@ -87,6 +98,7 @@ function loadSettings() {
 function saveSettings() {
     const settings = {
         brickColors: {},
+        paddleColor: document.getElementById('paddleColor').value,
         backgroundVideo: localStorage.getItem('gameBackgroundVideo'),
         audio: {}
     };
@@ -137,6 +149,33 @@ function resetBrickColors() {
     }
     updateBrickPreview();
     saveBrickColors();
+}
+
+// Paddle color functions
+function updatePaddlePreview() {
+    const paddleColor = document.getElementById('paddleColor').value;
+    const paddleDisplay = document.getElementById('paddlePreviewDisplay');
+    paddleDisplay.style.backgroundColor = paddleColor;
+}
+
+function savePaddleColor() {
+    const paddleColor = document.getElementById('paddleColor').value;
+    localStorage.setItem('gamePaddleColor', paddleColor);
+    saveSettings();
+    
+    // Apply immediately to any running games
+    if (typeof window.game !== 'undefined' && window.game.paddle) {
+        window.game.paddle.setColor(paddleColor);
+        console.log('Applied paddle color to running OOP game:', paddleColor);
+    }
+    
+    showMessage('Paddle color saved successfully! Changes will apply when you restart the games.', 'success');
+}
+
+function resetPaddleColor() {
+    document.getElementById('paddleColor').value = DEFAULT_SETTINGS.paddleColor;
+    updatePaddlePreview();
+    savePaddleColor();
 }
 
 // Video handling functions
@@ -436,6 +475,9 @@ function resetAllSettings() {
         // Reset brick colors
         resetBrickColors();
         
+        // Reset paddle color
+        resetPaddleColor();
+        
         // Reset video
         removeBackgroundVideo();
         
@@ -458,6 +500,7 @@ function resetAllSettings() {
 function exportSettings() {
     const settings = {
         brickColors: {},
+        paddleColor: document.getElementById('paddleColor').value,
         backgroundVideo: localStorage.getItem('gameBackgroundVideo'),
         audio: {}
     };
@@ -501,6 +544,12 @@ function importSettings() {
                     }
                 }
                 updateBrickPreview();
+            }
+            
+            // Import paddle color
+            if (settings.paddleColor) {
+                document.getElementById('paddleColor').value = settings.paddleColor;
+                updatePaddlePreview();
             }
             
             // Import background video

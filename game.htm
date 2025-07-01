@@ -285,7 +285,11 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     function drawPaddle() {
       ctx.beginPath();
       ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-      ctx.fillStyle = "#0095DD";  
+      
+      // Use custom paddle color if available
+      const customPaddleColor = localStorage.getItem('gamePaddleColor');
+      ctx.fillStyle = customPaddleColor || "#0095DD";
+      
       ctx.fill(); 
       ctx.closePath();
     }
@@ -394,6 +398,12 @@ canvas { background: #eee; display: block; margin: 0 auto; }
         } catch (error) {
           console.error('Error loading brick colors:', error);
         }
+      }
+
+      // Load custom paddle color
+      const savedPaddleColor = localStorage.getItem('gamePaddleColor');
+      if (savedPaddleColor) {
+        console.log('Loading custom paddle color:', savedPaddleColor);
       }
 
       // Load custom background video

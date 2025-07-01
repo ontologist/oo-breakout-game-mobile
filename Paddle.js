@@ -5,14 +5,30 @@ class Paddle {
     this.height = height;
     this.x = (canvas.width - width) / 2;
     this.speed = 7;
+    this.color = "#0095DD"; // Default paddle color
+    this.loadCustomColor();
   }
 
   draw(ctx) {
     ctx.beginPath();
     ctx.rect(this.x, this.canvas.height - this.height, this.width, this.height);
-    ctx.fillStyle = "#0095DD";  
+    ctx.fillStyle = this.color;  
     ctx.fill(); 
     ctx.closePath();
+  }
+
+  // Load custom paddle color from localStorage
+  loadCustomColor() {
+    const savedPaddleColor = localStorage.getItem('gamePaddleColor');
+    if (savedPaddleColor) {
+      this.color = savedPaddleColor;
+      console.log('Paddle: Loaded custom color:', savedPaddleColor);
+    }
+  }
+
+  // Update paddle color (for settings changes)
+  setColor(color) {
+    this.color = color;
   }
 
   moveLeft() {
