@@ -101,7 +101,7 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
 
   <!-- Mute button -->
-  <button id="muteButton" class="mute-button" onclick="toggleMute()">🔊</button>
+  <button id="muteButton" class="mute-button" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">🔊</button>
 
   <script src="player.js"></script>
   <script src="Sakura.js"></script>
@@ -217,21 +217,15 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       }
     }
 
-    // Load custom settings after DOM is completely ready
-    document.addEventListener('DOMContentLoaded', function() {
-      loadCustomSettings();
-    });
-    
-    // Fallback for browsers that don't support DOMContentLoaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
+    // Initialize game after everything is loaded
+    function initializeGame() {
+      console.log('Initializing game...');
+      try {
         loadCustomSettings();
-      });
-    } else {
-      // DOM is already loaded
-      setTimeout(() => {
-        loadCustomSettings();
-      }, 100);
+        console.log('Custom settings loaded successfully');
+      } catch (error) {
+        console.error('Error loading custom settings:', error);
+      }
     }
 
     // =================================================================
@@ -496,10 +490,39 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       bgm.play();
     }
 
-    // Add a button to start the game
-    document.getElementById("runButton").addEventListener("click", function () {
-      startGame();
-      this.disabled = true; 
+    // Initialize everything when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing game elements...');
+      
+      // Check for mute button
+      const muteButton = document.getElementById("muteButton");
+      if (muteButton) {
+        console.log('Mute button found and ready');
+      } else {
+        console.error('Mute button not found!');
+      }
+      
+      // Set up start button
+      const runButton = document.getElementById("runButton");
+      if (runButton) {
+        runButton.addEventListener("click", function () {
+          console.log('Start button clicked');
+          try {
+            // Initialize game settings first
+            initializeGame();
+            // Then start the game
+            startGame();
+            this.disabled = true;
+            console.log('Game started successfully');
+          } catch (error) {
+            console.error('Error starting game:', error);
+            alert('Error starting game: ' + error.message);
+          }
+        });
+        console.log('Start button event listener added');
+      } else {
+        console.error('Start button not found!');
+      }
     });
   </script>
 </section>
