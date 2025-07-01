@@ -105,4 +105,19 @@ class BrickGrid {
   allDestroyed() {
     return this.getRemainingBricks() === 0;
   }
+
+  // カスタム色を設定
+  setCustomColors(customColors) {
+    if (customColors) {
+      this.colors = { ...this.colors, ...customColors };
+      // 既存のブロックの色を更新
+      for (let c = 0; c < this.columns; c++) {
+        for (let r = 0; r < this.rows; r++) {
+          if (this.colors[c]) {
+            this.bricks[c][r].color = this.colors[c];
+          }
+        }
+      }
+    }
+  }
 } 

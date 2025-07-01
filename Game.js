@@ -8,7 +8,9 @@ class Game {
     this.ball = new Ball(canvas);
     this.paddle = new Paddle(canvas);
     this.brickGrid = new BrickGrid();
-    this.sakura = new Sakura(canvas); // Add Sakura animation
+    
+    // Load custom settings
+    this.loadCustomSettings();
     
     // ゲーム状態
     this.score = 0;
@@ -85,6 +87,96 @@ class Game {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
+  loadCustomSettings() {
+    // Load custom brick colors
+    const savedColors = localStorage.getItem('gameBrickColors');
+    if (savedColors) {
+      try {
+        this.customBrickColors = JSON.parse(savedColors);
+        this.brickGrid.setCustomColors(this.customBrickColors);
+      } catch (error) {
+        console.error('Error loading brick colors:', error);
+      }
+    }
+
+    // Load custom background video
+    this.customVideo = localStorage.getItem('gameBackgroundVideo');
+    if (this.customVideo) {
+      this.setupCustomVideo();
+    }
+
+    // Load custom audio
+    this.loadCustomAudio();
+  }
+
+  setupCustomVideo() {
+    if (this.customVideo) {
+      // Create video element from base64 data
+      const videoElement = document.createElement('video');
+      videoElement.src = this.customVideo;
+      videoElement.loop = true;
+      videoElement.muted = true;
+      videoElement.playsInline = true;
+      videoElement.style.display = 'none';
+      document.body.appendChild(videoElement);
+      this.video = videoElement;
+      
+      // Auto-play when game starts
+      videoElement.addEventListener('canplay', () => {
+        if (this.gameRunning) {
+          videoElement.play().catch(error => console.warn('Video play error:', error));
+        }
+      });
+    }
+  }
+
+  loadCustomAudio() {
+    const audioTypes = ['bgm', 'bounce', 'block', 'gameOver', 'win'];
+    audioTypes.forEach(type => {
+      const customAudio = localStorage.getItem(`gameAudio_${type}`);
+      if (customAudio) {
+        // Update the sound objects with custom audio
+        if (type === 'bgm') {
+          const bgmElement = document.getElementById('bgm');
+          if (bgmElement) {
+            bgmElement.src = customAudio;
+          }
+        } else {
+          // Update game sound effects
+          const soundMap = {
+            bounce: 'bounceSound',
+            block: 'blockSound', 
+            gameOver: 'gameOverSound',
+            win: 'winSound'
+          };
+          
+          if (this[soundMap[type]]) {
+            this[soundMap[type]].sound.src = customAudio;
+          }
+        }
+      }
+    });
+  }
+
+  drawBackground() {
+    // Try to draw custom video background first
+    if (this.video && this.video.readyState >= 2) {
+      try {
+        this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+        return;
+      } catch (error) {
+        console.warn('Video drawing error:', error);
+      }
+    }
+    
+    // Default gradient background
+    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+    gradient.addColorStop(0, '#1e3c72');
+    gradient.addColorStop(1, '#2a5298');
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   handleCollisions() {
     // 壁との衝突
     const wallCollision = this.ball.checkWallCollision();
@@ -146,8 +238,11 @@ class Game {
   }
 
   draw() {
-    // Sakura animation background (draws its own background)
-    this.sakura.draw();
+    // Clear canvas
+    this.clearCanvas();
+    
+    // Draw background (video or default)
+    this.drawBackground();
     
     // ゲームオブジェクトを描画
     this.brickGrid.draw(this.ctx);
@@ -170,6 +265,11 @@ class Game {
     if (!this.gameRunning) {
       this.gameRunning = true;
       this.interval = setInterval(() => this.draw(), 10);
+      
+      // Start custom video if available
+      if (this.video) {
+        this.video.play().catch(error => console.warn('Video play error:', error));
+      }
       
       // BGMを再生
       const bgm = document.getElementById("bgm");

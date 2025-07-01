@@ -47,6 +47,7 @@ canvas { background: #eee; display: block; margin: 0 auto; }
   <li><a href="job.htm">Job</a></li>
   <li><a href="game.htm">Original Game</a></li>
   <li><a href="gameObject.htm">OOP Game</a></li>
+  <li><a href="settings.htm">Settings</a></li>
 </ul>
 </nav>
 
@@ -75,8 +76,8 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const canvas = document.getElementById("MyCanvas");
     const ctx = canvas.getContext("2d");
     
-    // Initialize Sakura animation
-    const sakura = new Sakura(canvas);
+    // Load custom settings
+    loadCustomSettings();
 
     // Ball Properties
     let x = canvas.width / 2;
@@ -248,13 +249,97 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    // Load custom settings
+    function loadCustomSettings() {
+      // Load custom brick colors
+      const savedColors = localStorage.getItem('gameBrickColors');
+      if (savedColors) {
+        try {
+          const customColors = JSON.parse(savedColors);
+          Object.assign(brickColor, customColors);
+        } catch (error) {
+          console.error('Error loading brick colors:', error);
+        }
+      }
+
+      // Load custom background video
+      const customVideo = localStorage.getItem('gameBackgroundVideo');
+      if (customVideo) {
+        setupCustomVideo(customVideo);
+      }
+
+      // Load custom audio
+      loadCustomAudio();
+    }
+
+    function setupCustomVideo(videoData) {
+      // Create video element from base64 data
+      const videoElement = document.createElement('video');
+      videoElement.src = videoData;
+      videoElement.loop = true;
+      videoElement.muted = true;
+      videoElement.playsInline = true;
+      videoElement.style.display = 'none';
+      document.body.appendChild(videoElement);
+      
+      // Replace the global video variable
+      window.customVideoElement = videoElement;
+    }
+
+    function loadCustomAudio() {
+      const audioTypes = ['bgm', 'bounce', 'block', 'gameOver', 'win'];
+      audioTypes.forEach(type => {
+        const customAudio = localStorage.getItem(`gameAudio_${type}`);
+        if (customAudio) {
+          if (type === 'bgm') {
+            const bgmElement = document.getElementById('bgm');
+            if (bgmElement) {
+              bgmElement.src = customAudio;
+            }
+          } else {
+            // Update sound effects
+            const soundMap = {
+              bounce: bounceSound,
+              block: blockSound,
+              gameOver: gameOverSound,
+              win: winSound
+            };
+            
+            if (soundMap[type]) {
+              soundMap[type].sound.src = customAudio;
+            }
+          }
+        }
+      });
+    }
+
+    function drawBackground() {
+      // Try to draw custom video background first
+      if (window.customVideoElement && window.customVideoElement.readyState >= 2) {
+        try {
+          ctx.drawImage(window.customVideoElement, 0, 0, canvas.width, canvas.height);
+          return;
+        } catch (error) {
+          console.warn('Video drawing error:', error);
+        }
+      }
+      
+      // Default gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#1e3c72');
+      gradient.addColorStop(1, '#2a5298');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
     // =================================================================
     // 6. MAIN GAME LOOP & CONTROL
     // =================================================================
 
     function draw() {
-      // Draw Sakura animation background (draws its own background)
-      sakura.draw();
+      // Clear canvas and draw background
+      clearCanvas();
+      drawBackground();
       
       // Draw game elements
       drawBricks();
@@ -309,6 +394,12 @@ canvas { background: #eee; display: block; margin: 0 auto; }
 
     function startGame() {
       interval = setInterval(draw, 10);
+      
+      // Start custom video if available
+      if (window.customVideoElement) {
+        window.customVideoElement.play().catch(error => console.warn('Video play error:', error));
+      }
+      
       const bgm = document.getElementById("bgm");
       bgm.play();
     }

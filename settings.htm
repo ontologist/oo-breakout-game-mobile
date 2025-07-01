@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title>Game Settings</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Verdana, sans-serif; 
+    font-size: 0.8em;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+}
+
+header, nav, section, article, footer {
+    border: 1px solid grey; 
+    margin: 5px; 
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+}
+
+nav ul {margin: 0; padding: 0;}
+nav ul li {display: inline; margin: 5px;}
+
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.setting-group {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.setting-group h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.color-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.color-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker-item label {
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.color-picker {
+    width: 50px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.file-upload-area {
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin: 15px 0;
+    transition: background-color 0.3s;
+}
+
+.file-upload-area:hover {
+    background-color: #f0f4ff;
+}
+
+.file-upload-area.dragover {
+    background-color: #e6f0ff;
+    border-color: #4a90e2;
+}
+
+.file-input {
+    margin: 10px 0;
+}
+
+.preview-area {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.video-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 5px;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 5px;
+}
+
+.audio-controls label {
+    font-weight: bold;
+    min-width: 120px;
+}
+
+.audio-controls button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: #667eea;
+    color: white;
+}
+
+.audio-controls button:hover {
+    background: #5a6fd8;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a6fd8;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.file-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.success-message {
+    color: #28a745;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.brick-preview {
+    display: flex;
+    gap: 5px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.brick-sample {
+    width: 60px;
+    height: 20px;
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>ゲーム設定 / Game Settings</h1>
+</header>
+
+<nav>
+<ul>
+  <li><a href="aboutme.htm">About me</a></li>
+  <li><a href="hobbies.htm">Hobbies</a></li>
+  <li><a href="job.htm">Job</a></li>
+  <li><a href="game.htm">Original Game</a></li>
+  <li><a href="gameObject.htm">OOP Game</a></li>
+  <li><a href="settings.htm">Settings</a></li>
+</ul>
+</nav>
+
+<div class="settings-container">
+
+<section class="setting-group">
+    <h3>🎨 Brick Colors / ブロックの色</h3>
+    <p>Customize the colors of each brick column:</p>
+    
+    <div class="color-picker-grid">
+        <div class="color-picker-item">
+            <label>Column 1:</label>
+            <input type="color" class="color-picker" id="color0" value="#0095DD">
+        </div>
+        <div class="color-picker-item">
+            <label>Column 2:</label>
+            <input type="color" class="color-picker" id="color1" value="#DD9500">
+        </div>
+        <div class="color-picker-item">
+            <label>Column 3:</label>
+            <input type="color" class="color-picker" id="color2" value="#95DD00">
+        </div>
+        <div class="color-picker-item">
+            <label>Column 4:</label>
+            <input type="color" class="color-picker" id="color3" value="#DD0095">
+        </div>
+        <div class="color-picker-item">
+            <label>Column 5:</label>
+            <input type="color" class="color-picker" id="color4" value="#00DD95">
+        </div>
+    </div>
+    
+    <div class="brick-preview" id="brickPreview">
+        <!-- Brick previews will be generated here -->
+    </div>
+    
+    <button class="btn btn-primary" onclick="saveBrickColors()">Save Brick Colors</button>
+    <button class="btn btn-secondary" onclick="resetBrickColors()">Reset to Default</button>
+</section>
+
+<section class="setting-group">
+    <h3>🎬 Background Video / 背景動画</h3>
+    <p>Upload a background video (Max: 2MB, MP4 format recommended):</p>
+    
+    <div class="file-upload-area" id="videoUploadArea">
+        <p>📹 Drag and drop your video file here, or click to browse</p>
+        <input type="file" id="videoInput" accept="video/*" class="file-input">
+        <div class="file-info">Supported formats: MP4, WebM, OGV | Maximum size: 2MB</div>
+    </div>
+    
+    <div class="preview-area" id="videoPreviewArea" style="display: none;">
+        <h4>Video Preview:</h4>
+        <video id="videoPreview" class="video-preview" controls></video>
+        <div id="videoInfo" class="file-info"></div>
+    </div>
+    
+    <button class="btn btn-primary" onclick="saveBackgroundVideo()">Save Background Video</button>
+    <button class="btn btn-secondary" onclick="removeBackgroundVideo()">Remove Video</button>
+    <div id="videoMessage"></div>
+</section>
+
+<section class="setting-group">
+    <h3>🔊 Audio Settings / 音声設定</h3>
+    <p>Upload and test audio files (Max: 1MB each, MP3 format recommended):</p>
+    
+    <div class="audio-controls">
+        <label>Background Music:</label>
+        <input type="file" id="bgmInput" accept="audio/*">
+        <button onclick="testAudio('bgm')">🎵 Test</button>
+        <button onclick="stopAudio()">⏹️ Stop</button>
+        <audio id="bgmPreview"></audio>
+    </div>
+    
+    <div class="audio-controls">
+        <label>Bounce Sound:</label>
+        <input type="file" id="bounceInput" accept="audio/*">
+        <button onclick="testAudio('bounce')">🎵 Test</button>
+        <button onclick="stopAudio()">⏹️ Stop</button>
+        <audio id="bouncePreview"></audio>
+    </div>
+    
+    <div class="audio-controls">
+        <label>Block Hit Sound:</label>
+        <input type="file" id="blockInput" accept="audio/*">
+        <button onclick="testAudio('block')">🎵 Test</button>
+        <button onclick="stopAudio()">⏹️ Stop</button>
+        <audio id="blockPreview"></audio>
+    </div>
+    
+    <div class="audio-controls">
+        <label>Game Over Sound:</label>
+        <input type="file" id="gameOverInput" accept="audio/*">
+        <button onclick="testAudio('gameOver')">🎵 Test</button>
+        <button onclick="stopAudio()">⏹️ Stop</button>
+        <audio id="gameOverPreview"></audio>
+    </div>
+    
+    <div class="audio-controls">
+        <label>Win Sound:</label>
+        <input type="file" id="winInput" accept="audio/*">
+        <button onclick="testAudio('win')">🎵 Test</button>
+        <button onclick="stopAudio()">⏹️ Stop</button>
+        <audio id="winPreview"></audio>
+    </div>
+    
+    <button class="btn btn-primary" onclick="saveAudioSettings()">Save Audio Settings</button>
+    <button class="btn btn-secondary" onclick="resetAudioSettings()">Reset to Default</button>
+    <div id="audioMessage"></div>
+</section>
+
+<section class="setting-group">
+    <h3>⚙️ Actions / アクション</h3>
+    <button class="btn btn-success" onclick="applyAllSettings()">Apply All Settings to Games</button>
+    <button class="btn btn-secondary" onclick="resetAllSettings()">Reset All to Default</button>
+    <button class="btn btn-primary" onclick="exportSettings()">Export Settings</button>
+    <input type="file" id="importInput" accept=".json" style="display: none;" onchange="importSettings()">
+    <button class="btn btn-primary" onclick="document.getElementById('importInput').click()">Import Settings</button>
+</section>
+
+</div>
+
+<footer>
+<p>&copy; 2023 Game Settings. All rights reserved.</p>
+</footer>
+
+<script src="settings.js"></script>
+
+</body>
+</html> 
