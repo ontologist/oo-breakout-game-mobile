@@ -271,6 +271,26 @@ nav ul li {display: inline; margin: 5px;}
 </section>
 
 <section class="setting-group">
+    <h3>🏓 Paddle Color / パドルの色</h3>
+    <p>Customize the paddle color:</p>
+    
+    <div class="color-picker-grid">
+        <div class="color-picker-item">
+            <label>Paddle Color:</label>
+            <input type="color" class="color-picker" id="paddleColor" value="#0095DD">
+        </div>
+    </div>
+    
+    <div class="preview-area" id="paddlePreview">
+        <h4>Paddle Preview:</h4>
+        <div id="paddlePreviewDisplay" style="width: 75px; height: 10px; background: #0095DD; border-radius: 3px; margin: 10px 0;"></div>
+    </div>
+    
+    <button class="btn btn-primary" onclick="savePaddleColor()">Save Paddle Color</button>
+    <button class="btn btn-secondary" onclick="resetPaddleColor()">Reset to Default</button>
+</section>
+
+<section class="setting-group">
     <h3>🎬 Background Video / 背景動画</h3>
     <p>Upload a background video (Max: 10MB, automatically compressed to under 2MB):</p>
     
