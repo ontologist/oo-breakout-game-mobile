@@ -176,6 +176,11 @@ canvas { background: #eee; display: block; margin: 0 auto; }
     const paddleWidth = 75;
     let paddleX = (canvas.width - paddleWidth) / 2;
 
+    // Second paddle Properties
+    const paddleHeight2 = 10;
+    const paddleWidth2 = 75;
+    let paddleX2 = (canvas.width - paddleWidth2) / 2;
+
     // Brick Properties
     const brickRowCount = 3;
     const brickColumnCount = 5;
@@ -267,6 +272,8 @@ canvas { background: #eee; display: block; margin: 0 auto; }
       }
     }
 
+
+    
     // Initialize game after everything is loaded
     function initializeGame() {
       console.log('Initializing game...');
